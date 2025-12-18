@@ -23,6 +23,16 @@ Example: `.claude/commands/review.md` creates the `/review` command.
 
 Skills extend Claude's capabilities with specialized knowledge and workflows.
 
+To install skills, symlink the `skills/` directory:
+
+```bash
+ln -s /path/to/this/repo/skills ~/.claude/skills
+```
+
+#### Available Skills
+
+- **crawl4ai** - Web crawler that converts URLs to clean markdown for LLM consumption
+
 ### Agents
 
 Agent configurations for specialized task handling.

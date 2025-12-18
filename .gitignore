@@ -12,3 +12,8 @@ Thumbs.db
 # Temp
 *.tmp
 *.log
+
+# Python virtual environments
+.venv/
+__pycache__/
+*.pyc

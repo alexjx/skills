@@ -1,25 +1,20 @@
 {
   "name": "alexjx-skills",
-  "owner": "alexjx",
-  "description": "Custom skills, agents, and commands for Claude Code",
+  "owner": {
+    "name": "alexjx"
+  },
   "plugins": [
     {
       "name": "crawl4ai",
       "description": "Web crawler that converts URLs to clean markdown for LLM consumption. Use when user wants to crawl a webpage, extract web content, convert URL to markdown, or scrape website content for AI processing.",
-      "source": {
-        "type": "path",
-        "path": "skills/crawl4ai"
-      },
-      "requireManifest": false
+      "source": "./skills/crawl4ai",
+      "strict": false
     },
     {
       "name": "document-review",
       "description": "Reviews documents for correctness, clarity, and readability. Use when user wants to review, proofread, validate, or check a document.",
-      "source": {
-        "type": "path",
-        "path": "agents"
-      },
-      "requireManifest": false
+      "source": "./agents",
+      "strict": false
     }
   ]
 }

@@ -1,6 +1,6 @@
 ---
 name: crawl4ai
-description: Web crawler that converts URLs to clean markdown for LLM consumption. Use when user wants to crawl a webpage, extract web content, convert URL to markdown, or scrape website content for AI processing.
+description: Web crawler that converts URLs to clean markdown. Use when user wants to fetch a webpage, extract web content, convert URL to markdown, or scrape website content.
 ---
 
 # Crawl4AI Web Crawler

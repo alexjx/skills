@@ -18,11 +18,13 @@ async def crawl(
     include_images: bool = False,
     headless: bool = True,
     timeout: int = 30,
+    verbose: bool = False,
 ) -> str:
     """Crawl URL and return markdown content."""
     browser_config = BrowserConfig(
         browser_type="chromium",
         headless=headless,
+        verbose=verbose,
     )
 
     md_generator = DefaultMarkdownGenerator(
@@ -35,6 +37,7 @@ async def crawl(
     run_config = CrawlerRunConfig(
         page_timeout=timeout * 1000,  # ms
         markdown_generator=md_generator,
+        verbose=verbose,
     )
 
     async with AsyncWebCrawler(config=browser_config) as crawler:
@@ -79,8 +82,15 @@ def main():
         default=30,
         help="Page load timeout in seconds (default: 30)"
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable crawler progress logs"
+    )
 
     args = parser.parse_args()
+    if args.timeout <= 0:
+        parser.error("--timeout must be greater than 0")
 
     try:
         markdown = asyncio.run(
@@ -90,6 +100,7 @@ def main():
                 include_images=args.include_images,
                 headless=not args.no_headless,
                 timeout=args.timeout,
+                verbose=args.verbose,
             )
         )
 

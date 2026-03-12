@@ -23,7 +23,7 @@ skills/crawl4ai/scripts/setup.sh
 This will:
 1. Check for `uv` installation
 2. Run `uv sync` to create `.venv/` and install dependencies
-3. Run `crawl4ai-setup` to install playwright browsers
+3. Install Playwright Chromium browser (`python -m playwright install chromium --with-deps`)
 4. Run `crawl4ai-doctor` to verify installation
 
 ## Usage
@@ -33,6 +33,8 @@ To crawl a URL and get markdown (from the skill directory):
 ```bash
 cd skills/crawl4ai
 uv run python scripts/crawl.py "https://example.com"
+# Or after setup:
+uv run crawl "https://example.com"
 ```
 
 Options:
@@ -41,6 +43,7 @@ Options:
 - `--include-images` - Include image references
 - `--no-headless` - Show browser window (default: headless)
 - `--timeout SECONDS` - Page load timeout (default: 30)
+- `--verbose` - Enable crawler progress logs
 
 ## Examples
 

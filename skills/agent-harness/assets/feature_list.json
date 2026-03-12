@@ -1,0 +1,38 @@
+{
+  "project_name": "",
+  "description": "",
+  "features": [
+    {
+      "id": "feat-001",
+      "category": "infrastructure",
+      "description": "Project initialization and repository setup",
+      "steps": [
+        "Initialize project structure",
+        "Set up version control",
+        "Create configuration files",
+        "Verify build system works"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "feat-002",
+      "category": "infrastructure",
+      "description": "Development environment with hot reload",
+      "steps": [
+        "Create init.sh script",
+        "Configure dev server",
+        "Verify server starts cleanly",
+        "Test hot reload functionality"
+      ],
+      "passes": false,
+      "notes": ""
+    }
+  ],
+  "metadata": {
+    "last_updated": "",
+    "total_features": 2,
+    "completed_features": 0,
+    "version": "1.0.0"
+  }
+}

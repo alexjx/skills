@@ -23,12 +23,21 @@ git ls-files --others --exclude-standard
 
 ### 2. Stage Files
 
-Add the untracked and changed files relevant to the current work.
+Add only the untracked and changed files that belong in the current commit.
+
+Prefer explicit paths over broad staging. Use `git add <paths>` for the files that
+actually belong to the change.
 
 **Do NOT stage:**
 - `.env` or credential files
 - Large binary files
 - Files unrelated to the current task
+- Task-tracking, planning, or research files under `tasks/`, `.agents/tasks/`,
+  `.agents/plans/`, or `.agents/research/` unless the user explicitly asks to
+  commit them
+
+If the only remaining changes are workflow files, stop and confirm before
+committing. Do not pull them in automatically.
 
 ### 3. Create Commit
 

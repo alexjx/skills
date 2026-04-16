@@ -23,15 +23,19 @@ Example: `.claude/commands/review.md` creates the `/review` command.
 
 Skills extend Claude's capabilities with specialized knowledge and workflows.
 
-To install skills, symlink the `skills/` directory:
+To install skills, run the bundled installer:
 
 ```bash
-ln -s /path/to/this/repo/skills ~/.claude/skills
+./install.sh
 ```
+
+It copies the `skills/` tree into `.agents/skills/` and recreates `.claude/skills`
+as a symlink to the installed copy.
 
 #### Available Skills
 
-- **crawl4ai** - Web crawler that converts URLs to clean markdown for LLM consumption
+- **agent-harness** - Orchestrate multi-session work with persistent state tracking
+- **commit** - Create atomic commits with conventional commit formatting
 - **execute-plan** - Execute a written implementation plan with dependency analysis and verification
 - **handover** - Consolidate multi-step context into an executable handover document for coding agents, external tool agents, or human operators
 

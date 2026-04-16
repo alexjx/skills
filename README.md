@@ -32,6 +32,8 @@ ln -s /path/to/this/repo/skills ~/.claude/skills
 #### Available Skills
 
 - **crawl4ai** - Web crawler that converts URLs to clean markdown for LLM consumption
+- **execute-plan** - Execute a written implementation plan with dependency analysis and verification
+- **handover** - Consolidate multi-step context into an executable handover document for coding agents, external tool agents, or human operators
 
 ### Agents
 

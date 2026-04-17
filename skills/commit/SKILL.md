@@ -32,9 +32,9 @@ actually belong to the change.
 - `.env` or credential files
 - Large binary files
 - Files unrelated to the current task
-- Task-tracking, planning, or research files under `tasks/`, `.agents/tasks/`,
-  `.agents/plans/`, or `.agents/research/` unless the user explicitly asks to
-  commit them
+- Any files under `.agents/` unless the user explicitly asks to commit them
+- Task-tracking, planning, or research files under `tasks/` unless the user
+  explicitly asks to commit them
 
 If the only remaining changes are workflow files, stop and confirm before
 committing. Do not pull them in automatically.

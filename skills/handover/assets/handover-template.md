@@ -18,6 +18,18 @@
 - What is in progress
 - What is not started
 
+## Design Spec
+- Architecture/approach:
+- Data flow:
+- Interfaces or files to touch:
+- Key invariants:
+- Tradeoffs already decided:
+
+## Concrete Task List
+- [ ] Task 1 with clear output or completion criteria
+- [ ] Task 2 with clear output or completion criteria
+- [ ] Task 3 with clear output or completion criteria
+
 ## Decisions Already Made
 - Decision 1:
 - Decision 2:
@@ -34,9 +46,9 @@
 - `path/or/source`: what it contains, how to use it
 
 ## Execution Plan
-1. Step 1
-2. Step 2
-3. Step 3
+1. Execute task(s):
+2. Update affected artifacts:
+3. Run verification:
 
 ## Verification
 - Command/check 1:
@@ -44,7 +56,7 @@
 - Behavioral check:
 
 ## Open Questions
-- Question: owner, expected resolution path
+- Only true blockers should remain
 - Question: owner, expected resolution path
 
 ## Out of Scope

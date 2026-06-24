@@ -1,0 +1,24 @@
+{
+  "name": "alexjx-skills",
+  "version": "0.1.0",
+  "description": "Reusable agent skills and agent configurations.",
+  "private": true,
+  "files": [
+    "skills/",
+    "agents/",
+    "install.sh",
+    "README.md",
+    "CLAUDE.md"
+  ],
+  "scripts": {
+    "skills:list": "npx skills add ./skills --list",
+    "skills:use:commit": "npx skills use ./skills --skill commit"
+  },
+  "keywords": [
+    "agent-skills",
+    "claude-code",
+    "codex",
+    "skills"
+  ],
+  "license": "UNLICENSED"
+}

@@ -23,14 +23,50 @@ Example: `.claude/commands/review.md` creates the `/review` command.
 
 Skills extend Claude's capabilities with specialized knowledge and workflows.
 
-To install skills, run the bundled installer:
+This repository uses the layout expected by the `skills` CLI:
+
+```
+skills/<name>/SKILL.md
+```
+
+List the available skills with:
+
+```bash
+npx skills add https://github.com/alexjx/skills/tree/main/skills --list
+```
+
+Install all skills with:
+
+```bash
+npx skills add https://github.com/alexjx/skills/tree/main/skills --skill '*' -y
+```
+
+Install one skill with:
+
+```bash
+npx skills add https://github.com/alexjx/skills/tree/main/skills --skill commit -y
+```
+
+Use a skill without installing it:
+
+```bash
+npx skills use https://github.com/alexjx/skills/tree/main/skills --skill commit
+```
+
+The bundled installer wraps the same local source path:
 
 ```bash
 ./install.sh
 ```
 
-It copies the `skills/` tree into `.agents/skills/` and recreates `.claude/skills`
-as a symlink to the installed copy.
+Pass any `skills add` options after the script name, for example:
+
+```bash
+./install.sh --agent codex --skill commit -y
+```
+
+For local development, use `./skills` in place of the HTTPS URL so generated
+agent state under `.agents/` or `.claude/` is not rediscovered as source content.
 
 #### Available Skills
 

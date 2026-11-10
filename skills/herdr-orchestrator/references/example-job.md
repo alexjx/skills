@@ -1,6 +1,6 @@
 # Example job j42 · stabilize CSV exports
 
-The parser and docs are independent. The round-trip regression test depends on the parser being integrated. Each item has an implementer and reviewer address in the manifest. One integrator owns the job branch. The commit labels below stand in for full Git object IDs.
+The parser and docs are independent. The round-trip regression test depends on the parser being integrated. Each item has an implementer and reviewer address in their startup messages. One integrator owns the job branch. The commit labels below stand in for full Git object IDs.
 
 | Event | Sender → receiver | Result |
 | --- | --- | --- |
@@ -16,4 +16,13 @@ The parser and docs are independent. The round-trip regression test depends on t
 | `roundtrip.r1.review` | Round-trip reviewer → integrator | Approve `R1`. Integrate at `I3` and run the final checks. |
 | `job.ready` | Integrator → planner | The final commit is `I3` and the required checks passed. |
 
-After saving the second parser review, the reviewer sends `HERDR_JOB j42 parser.r2.review` directly to the integrator. The integrator matches it to the saved approval of `P2`. If that message arrives twice, the integrator uses its existing record. A delayed request about `P1` cannot restart the first review round.
+After the second parser review, the reviewer sends the approval itself directly to the integrator:
+
+```text
+Job j42 | parser.r2.review | APPROVED
+Candidate parser.r2.candidate: B0..P2 (use full SHAs in actual messages).
+Trailing-empty-field regression fixed; parser regression checks passed.
+Integrate P2 and unblock roundtrip after integration.
+```
+
+No handoff file is needed. If the message arrives twice, the integrator checks its handled messages and Git state before acting. A delayed request about P1 cannot restart the first review round. Large test output may be linked separately, while the outcome and next action stay in the message.

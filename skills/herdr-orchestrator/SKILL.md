@@ -1,21 +1,36 @@
 ---
 name: herdr-orchestrator
-description: Set up or resume multi-agent coding jobs in Herdr with direct implementer-to-reviewer handoffs, parallel work items, progress-aware review loops, and a final integration handoff.
+description: Set up or resume multi-agent jobs in Herdr by confirming agent responsibilities, workflow, and handoff conditions with the user; coordinate execution, review, and completion.
 ---
 
 # Herdr orchestrator
 
-Stay in the user's planner session. Agree on the outcome and acceptance criteria, choose the work graph, and start a job whose workers can advance it by messaging each other. The planner handles scope decisions and receives the final result.
+Keep a coordinator responsible for interacting with the user and coordinating the other agents. Roles are responsibilities, not required separate sessions. Confirm their owners and workflow before dispatching work.
 
 Load the installed `herdr-core` or `herdr` skill by name and read its `SKILL.md`. If both are available, choose the one for the current session or use the user's choice. Use that skill for terminal addressing, startup readiness, direct messaging, and recovery. If neither is available, or the selected backend cannot deliver a prompt to a downstream agent, surface that setup blocker before starting the job.
 
-## Set up the job
+## Agree on the team and workflow
 
-1. Establish the approved scope, acceptance criteria, job-level checks, and independently owned work items with explicit dependencies. Keep this inline for simple jobs; use `.agents/plans/<job-id>.md` when the plan is complex or needs to survive sessions.
-2. Read [handoff guidance](references/job-schema.md) and [worker prompts](references/worker-prompts.md). Assign an implementer and reviewer per active item, plus one integration agent. A reviewer may cover multiple items if its incoming turns can be serialized. Use separate writable worktrees for concurrent changes.
-3. Start and confirm receivers are ready before sending initial work. Send each role its scope, criteria, worktree, expected messages, and downstream addresses inline. Tell idle workers to return to their prompt after setup, then kick off dependency-free items.
-4. Workers send results and evidence directly to the next role. Default to concise plain text, without JSON envelopes or handoff files. Use files only for complex content, large artifacts, or necessary recovery checkpoints, with the actionable summary still inline. The integration agent owns the dependency join and final verification. Continue working with the user in the planner session; the integrator reports the final commit or escalates a decision exceeding scope.
+On the first run for a job, inspect available agents and existing user instructions. Use agent names and stated context to propose responsibilities; names are hints, not authorization. Present one concise proposal for the user to confirm or correct before starting agents or dispatching work:
 
-For a concrete parallel job and review loop, see [the worked example](references/example-job.md). On explicit resume, reconcile available messages, any checkpoints, and Git state before replaying a missing handoff. Use a replacement worker only after resolving ownership of the prior worker's write access.
+- **Coordinator:** user interaction, routing, dependency tracking, blockers, and final delivery.
+- **Planner:** scope, decomposition, dependencies, and acceptance criteria. If absent, the coordinator performs these duties.
+- **Reviewer:** evaluate outputs against the agreed criteria and request corrections or approve. If absent, the coordinator performs these duties; review is not skipped.
+- **Workers:** one or more agents executing explicitly assigned scopes. Ask the user to choose or confirm each worker's responsibility, using names to suggest likely scopes when helpful. Do not silently assign specialties, divide work, or create extra workers.
 
-Continue implementation and review until the acceptance criteria pass while meaningful progress is being made; do not impose a default round limit. Use the [progress and repetition rules](references/job-schema.md#progress-and-repetition) to detect stalled or cycling work, change approach, and escalate when a decision is needed.
+Include each agent's name/address, role(s), scope, and expected output. Confirm the workflow alongside the role map: stages, dependencies, who hands off to whom, the evidence and conditions required for each transition, correction routes, escalation conditions, and final acceptance checks. Explain that this initial confirmation establishes responsibilities and handoff rules. Existing explicit choices count as confirmation; ask only about unresolved choices. While awaiting confirmation, discovery and proposal preparation may continue, but dependent execution must wait.
+
+For coding jobs, propose the existing implementation → review → integration workflow as the **default**, not a requirement. It provides a clear quality gate on each exact candidate and a single owner for combining concurrent changes and checking the final result. Planning precedes implementation; review findings return to the worker; blockers and final results go to the coordinator. Integration is a responsibility the coordinator covers unless the user confirms another owner, not a required extra agent. Adapt the stages and evidence to other tasks or the user's preferred workflow.
+
+Record the confirmed agreement inline for simple jobs or in `.agents/plans/<job-id>.md` when it needs to survive sessions. On resume, reuse it and reconcile messages, checkpoints, and current artifacts before replaying work. Confirm material changes to responsibilities or handoff rules rather than repeating the whole setup.
+
+## Run the agreed job
+
+1. Read [handoff guidance](references/job-schema.md) and [role prompts](references/worker-prompts.md). Bind logical roles to the confirmed agents, including coordinator fallbacks. For concurrent code changes, use separate writable worktrees.
+2. Start and confirm receivers are ready before sending initial work. Send each agent its confirmed scope, criteria, workspace, expected messages, and downstream addresses inline. Tell idle agents to return to their prompt after setup, then kick off dependency-free items.
+3. Send results and evidence directly to the next confirmed owner when the agreed handoff conditions are met. Default to concise plain text, without JSON envelopes or handoff files. Use files for complex content, large artifacts, or necessary recovery checkpoints, with the actionable summary still inline. If consecutive roles belong to the same agent, perform the next responsibility locally and record its outcome instead of messaging itself.
+4. The coordinator tracks dependencies and communicates with the user. The confirmed integration/completion owner combines accepted outputs and performs final verification, then reports to the coordinator for user delivery. Keep publishing and merging subject to the user's authorization.
+
+For the default coding workflow, see [the worked example](references/example-job.md). Use a replacement worker only after resolving ownership of the prior worker's write access and confirming changed responsibilities.
+
+Continue execution and review until the acceptance criteria pass while meaningful progress is being made; do not impose a default round limit. Use the [progress and repetition rules](references/job-schema.md#progress-and-repetition) to detect stalled or cycling work, change approach, and escalate when a decision is needed.

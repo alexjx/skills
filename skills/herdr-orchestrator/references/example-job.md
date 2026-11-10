@@ -1,10 +1,12 @@
 # Example job j42 · stabilize CSV exports
 
+This is the default coding workflow, after the user confirms the following responsibilities and handoffs. Separate reviewers and an integrator are illustrative; the coordinator covers planning, review, and integration when those owners are absent. Agent names suggest scopes but do not select them.
+
 The parser and docs are independent. The round-trip regression test depends on the parser being integrated. Each item has an implementer and reviewer address in their startup messages. One integrator owns the job branch. The commit labels below stand in for full Git object IDs.
 
 | Event | Sender → receiver | Result |
 | --- | --- | --- |
-| `parser.r1.start`, `docs.r1.start` | Planner → each implementer | Both start from `B0` in separate worktrees. The planner returns to the user. |
+| `parser.r1.start`, `docs.r1.start` | Coordinator → each implementer | Both start from `B0` in separate worktrees. The coordinator continues interacting with the user. |
 | `parser.r1.candidate` | Parser implementer → parser reviewer | Review `B0..P1`. |
 | `docs.r1.candidate` | Docs implementer → docs reviewer | Review `B0..D1` while parser review is underway. |
 | `parser.r1.review` | Parser reviewer → parser implementer | Request a fix because a quoted field followed by a trailing delimiter loses the final empty value. |
@@ -14,7 +16,7 @@ The parser and docs are independent. The round-trip regression test depends on t
 | `roundtrip.r1.start` | Integrator → round-trip implementer | The parser dependency is satisfied. Start at `I2`. |
 | `roundtrip.r1.candidate` | Round-trip implementer → round-trip reviewer | Review `I2..R1`. |
 | `roundtrip.r1.review` | Round-trip reviewer → integrator | Approve `R1`. Integrate at `I3` and run the final checks. |
-| `job.ready` | Integrator → planner | The final commit is `I3` and the required checks passed. |
+| `job.ready` | Integrator → coordinator | The final commit is `I3` and the required checks passed. |
 
 After the second parser review, the reviewer sends the approval itself directly to the integrator:
 

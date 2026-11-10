@@ -1,13 +1,19 @@
 ---
 name: herdr-orchestrator
-description: Run or resume multi-agent coding jobs in Herdr Core when the user wants to work with one planner that dispatches implementers, coordinates parallel worktrees, and owns review and integration across multiple rounds.
+description: Run or resume multi-agent coding jobs in Herdr when the user wants to work with one planner that dispatches implementers, coordinates parallel worktrees, and owns review and integration across multiple rounds.
 ---
 
 # Herdr orchestrator
 
 Stay in the user's planner session. Own the plan, dispatch decisions, and review verdicts. Delegate implementation to workers and bring in a fresh reviewer when risk, complexity, or the user calls for independent review. A job delivers one mergeable outcome.
 
-Read [the job schema](references/job-schema.md) before creating or resuming a job. Read [worker prompts and transport](references/worker-prompts.md) before dispatch. Use [the worked example](references/example-job.md) for a parallel job with a fix and re-review.
+## Select the installed Herdr skill
+
+Load `herdr-core` or `herdr` by name from the host's available skills and read its `SKILL.md`. If only one is installed, use it. If both are installed, use the one for the current session (`HC_TERMINAL_ID` indicates Core, `HERDR_PANE_ID` indicates TUI). If there is no clear session match, use the user's choice or ask before dispatch. If neither skill is available, report the missing dependency before launching workers.
+
+Follow the selected skill for launch, waiting, notifications, recovery, and cleanup. Its setup and prerequisites apply. Keep a job's workers on the same backend and reconcile outstanding dispatches before changing backends.
+
+Read [the job schema](references/job-schema.md) before creating or resuming a job. Read [worker prompts](references/worker-prompts.md) before dispatch. Use [the worked example](references/example-job.md) for a parallel job with a fix and re-review.
 
 ## Run a job
 

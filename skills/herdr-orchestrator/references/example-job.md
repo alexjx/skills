@@ -22,12 +22,12 @@ This fictional example uses short commit labels for readability. Real job record
 | `j42-roundtrip-i1` | A worker starts at `I2`, adds the fixture, and reports `I2..R1`. | Roundtrip enters review. |
 | `j42-roundtrip-r1` | The planner reviews `I2..R1` and approves. | Roundtrip is accepted and integrated at `I3`. |
 
-For the second parser review, the worker saves `reports/j42-parser-r2.json` in the job directory, then sends:
+For the second parser review, the worker saves `reports/j42-parser-r2.json` in the job directory, then uses the reporting route from the selected Herdr skill if available, with this payload:
 
 ```text
 JOB_UPDATE j42 parser j42-parser-r2
 ```
 
-If the same callback arrives twice, the planner sees that the dispatch was already consumed. If a delayed first-round result arrives while the second round is active, its ID and head identify it as stale. If the planner was busy and missed the second callback, it finds the report at the active dispatch's expected path during reconciliation.
+If the same callback arrives twice, the planner sees that the dispatch was already consumed. If a delayed first-round result arrives while the second round is active, its ID and head identify it as stale. If delivery of the second callback is uncertain, it finds the report at the active dispatch's expected path during reconciliation.
 
 The planner runs the job-level checks at `I3` and records them against that commit before marking the job `ready_for_merge`. It gives the user `I3`, the check outcomes, and the resolved review finding.

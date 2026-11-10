@@ -1,6 +1,6 @@
 ---
 name: herdr-orchestrator
-description: Set up or resume multi-agent coding jobs in Herdr with direct implementer-to-reviewer handoffs, parallel work items, bounded review rounds, and a final integration handoff.
+description: Set up or resume multi-agent coding jobs in Herdr with direct implementer-to-reviewer handoffs, parallel work items, progress-aware review loops, and a final integration handoff.
 ---
 
 # Herdr orchestrator
@@ -17,3 +17,5 @@ Load the installed `herdr-core` or `herdr` skill by name and read its `SKILL.md`
 4. After kickoff, workers save their results and message the next role directly. The integration agent owns the dependency join and final verification. Continue working with the user in the planner session. The integration agent reports the final commit or escalates a decision that exceeds the approved scope.
 
 For a concrete parallel job and review loop, see [the worked example](references/example-job.md). On explicit resume, reconcile durable reports and route records before replaying a missing handoff. Use a replacement worker only after resolving ownership of the prior worker's write access.
+
+Continue implementation and review until the acceptance criteria pass while meaningful progress is being made; do not impose a default round limit. Use the [progress and repetition rules](references/job-schema.md#progress-and-repetition) to detect stalled or cycling work, change approach, and escalate when a decision is needed.

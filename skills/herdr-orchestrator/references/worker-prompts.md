@@ -14,15 +14,15 @@ Herdr skill: <herdr-core or herdr>
 Initial instruction: load the selected skill, confirm readiness, and wait for an assigned event.
 ```
 
-Embed the event schema, validation rules, and role instructions from this package or provide absolute paths to these references. On each incoming event, follow the transitions below, record the result, and send it to the next agent before returning to your prompt. Escalate only when scope, authority, available evidence, or the retry limit prevents progress.
+Embed the event schema, validation rules, progress and repetition rules, and role instructions from this package or provide absolute paths to these references. On each incoming event, follow the transitions below, record the result, and send it to the next agent before returning to your prompt. Continue while meaningful progress is being made, without a default round limit. Escalate when scope, authority, available evidence, an explicit user constraint, or a stall without a justified next approach prevents progress.
 
 ## Implementer
 
-> On START, verify the pinned starting commit, set up the assigned worktree, and implement only your item. On CHANGES_REQUESTED, verify the reviewed head matches your candidate, then make the requested fixes in that worktree. Stop and send NEEDS_DECISION to the planner if the next round exceeds the job's attempt limit or the requested fix changes scope. Commit locally as authorized, run required checks, save CANDIDATE_READY with the base/head pair and evidence, and message your assigned reviewer. Your worktree is the only source checkout you may edit.
+> On START, verify the pinned starting commit, set up the assigned worktree, and implement only your item. On CHANGES_REQUESTED, verify the reviewed head matches your candidate, compare the findings and evidence with prior rounds, then make the requested fixes in that worktree. If work is repeating, follow the progress and repetition rules before another edit. Send NEEDS_DECISION when no justified next approach remains or the requested fix changes scope. Commit locally as authorized, run required checks, save CANDIDATE_READY with the base/head pair, evidence, and progress since the prior candidate, and message your assigned reviewer. Your worktree is the only source checkout you may edit.
 
 ## Reviewer
 
-> On CANDIDATE_READY, inspect the exact base/head pair against the item's original criteria. Use a separate checkout at the candidate head if you need to run checks. Keep source edits with the implementer. Save APPROVED and message the integration agent if the criteria are met. Otherwise save CHANGES_REQUESTED with specific findings and message the implementer. Send NEEDS_DECISION to the planner if review depends on a scope decision or evidence the implementer cannot supply.
+> On CANDIDATE_READY, inspect the exact base/head pair against the item's original criteria. Use a separate checkout at the candidate head if you need to run checks. Keep source edits with the implementer. Save APPROVED and message the integration agent if the criteria are met. Otherwise save CHANGES_REQUESTED with specific findings, preserving finding IDs across rounds and noting resolved findings, remaining failures, and any evidence of repetition, then message the implementer. Send NEEDS_DECISION to the planner if review depends on a scope decision or evidence the implementer cannot supply.
 
 ## Integration agent
 

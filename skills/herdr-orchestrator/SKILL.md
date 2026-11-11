@@ -7,7 +7,7 @@ description: Set up or resume multi-agent jobs in Herdr by confirming agent resp
 
 Keep a coordinator responsible for interacting with the user and coordinating the other agents. Roles are responsibilities, not required separate sessions. Confirm their owners and workflow before dispatching work.
 
-Load the installed `herdr-core` or `herdr` skill by name and read its `SKILL.md`. If both are available, choose the one for the current session or use the user's choice. Use that skill for terminal addressing, startup readiness, direct messaging, and recovery. If neither is available, or the selected backend cannot deliver a prompt to a downstream agent, surface that setup blocker before starting the job.
+Before discovering agents or issuing control commands, resolve the runtime using [backend selection](references/backend-selection.md). `herdr-core` (`hc`) and legacy `herdr` (TUI) are incompatible runtimes, not alternative command spellings. Load only the selected official skill for operations. Use it for terminal addressing, startup readiness, direct messaging, and recovery. If its required skill, CLI, session context, or downstream messaging capability is unavailable, surface that setup blocker before starting the job; never fall back to the other runtime.
 
 ## Agree on the team and workflow
 

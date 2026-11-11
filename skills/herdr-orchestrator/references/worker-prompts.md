@@ -12,8 +12,11 @@ Scope and acceptance criteria: <inline>
 Dependencies, downstream addresses, and handoff conditions: <confirmed agreement>
 Worktree and starting commit: <absolute path and full SHA>
 Optional supporting artifacts: <paths only when needed>
-Herdr skill: <herdr-core or herdr>
-Initial instruction: load the selected skill, confirm readiness, and wait for an assigned event.
+Herdr runtime and CLI: <herdr-core / hc OR herdr / herdr>
+Official skill source: <absolute SKILL.md path or selected CLI --skill>
+Runtime context: <verified machine/session and coordinator address>
+Worker address: <verified address in that same runtime>
+Initial instruction: load the pinned official skill, verify that your context matches this runtime binding, confirm readiness, and wait for an assigned event. Report mismatches to the coordinator; never switch runtimes or translate addresses.
 ```
 
 Include the relevant handoff, progress, and role instructions inline. Link supporting references only when their complexity warrants it. On each incoming event, follow the transitions below, send the result and evidence directly to the next agent before returning to your prompt. Continue while meaningful progress is being made, without a default round limit. Escalate when scope, authority, available evidence, an explicit user constraint, or a stall without a justified next approach prevents progress.

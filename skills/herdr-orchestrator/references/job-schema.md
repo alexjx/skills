@@ -43,7 +43,7 @@ Check incoming messages against the assigned job, sender Agent ID and its record
 
 The confirmed integration owner (coordinator unless otherwise assigned) alone writes the integration branch and owns dependency state. Serialize integration turns, track accepted source heads and resulting integration heads, and send one START per newly unblocked item with its pinned starting commit. Reconcile Git history before replaying an interrupted integration. Review conflict resolutions that change behavior, then run job-level checks on the final integration head.
 
-Send the next handoff without waiting for the receiver to finish. If the receiver is busy, use the selected skill's readiness or delivery recovery mechanism before retrying. Each handler sends its outcome and returns to the prompt. Escalate an unrecoverable route, stalled work, or scope decision to the coordinator.
+Send the next handoff without waiting for the receiver to finish. If the receiver is busy, use the selected skill's readiness or delivery recovery mechanism before retrying. Inspect readiness through the runtime rather than asking workers for acknowledgements. Workers consume working/busy statuses, informational updates, and receipt messages silently; assignments such as START trigger work, not a `reply` or `acknowledge` message. Send a message only for an actionable result, required completion report, blocker, or decision request. Status-only messages must not trigger TASK_FINISHED or a pending-job query. After handling an assignment, send its outcome and return to the prompt. Escalate an unrecoverable route, stalled work, or scope decision to the coordinator.
 
 ## When files help
 

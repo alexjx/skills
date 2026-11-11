@@ -20,11 +20,11 @@ Herdr runtime and CLI: <herdr-core / hc OR herdr / herdr>
 Official skill source: <absolute SKILL.md path or selected CLI --skill>
 Runtime context: <verified machine/session and coordinator address>
 Worker address: <verified address in that same runtime>
-Initial instruction: load the pinned official skill, verify that your context matches this runtime binding, confirm readiness, and wait for an assigned event. Report mismatches to the coordinator; never switch runtimes or translate addresses.
+Initial instruction: load the pinned official skill, verify that your context matches this runtime binding, and wait silently for an assigned event. Do not send a readiness acknowledgement. Report mismatches to the coordinator; never switch runtimes or translate addresses.
 Completion instruction: when your assigned task finishes, send TASK_FINISHED with your Agent ID, job/item, result, and evidence to the dispatcher, even after a downstream handoff. Ask the Administrator: "Please check for pending jobs from the user's requests and dispatch any eligible work." Send this query to the Administrator directly if it is a different receiver.
 ```
 
-Include the relevant handoff, progress, and role instructions inline. Link supporting references only when their complexity warrants it. On each incoming event, follow the transitions below, send the result and evidence directly to the next agent before returning to your prompt. Continue while meaningful progress is being made, without a default round limit. Escalate when scope, authority, available evidence, an explicit user constraint, or a stall without a justified next approach prevents progress.
+Include the relevant handoff, progress, and role instructions inline. Link supporting references only when their complexity warrants it. On an actionable assignment, follow the transitions below and send the result and evidence directly to the next agent when the work produces an outcome. On working/busy statuses or informational updates, update local state silently. Do not send `reply`, `acknowledge`, receipt confirmations, or acknowledgements of acknowledgements, including for START; start the assigned work without a receipt message. Only actual assignment completion triggers TASK_FINISHED and its pending-job query. Continue while meaningful progress is being made, without a default round limit. Escalate when scope, authority, available evidence, an explicit user constraint, or a stall without a justified next approach prevents progress.
 
 ## Coordinator
 

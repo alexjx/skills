@@ -35,4 +35,6 @@ Record the confirmed agreement inline for simple jobs or in `.agents/plans/<job-
 
 For the default coding workflow, see [the worked example](references/example-job.md). Use a replacement worker only after resolving ownership of the prior worker's write access and confirming changed responsibilities.
 
+Keep routine status traffic silent. Workers must not send `reply`, `acknowledge`, or receipt/readiness messages when receiving an assignment, a working/busy status, or an informational update. Begin assigned work or update local state without messaging the planner or orchestrator. Check startup readiness through the selected runtime's inspection mechanism. Send only actionable results, required completion reports, blockers, or decision requests; receiving a status message is not task completion and must not trigger a completion report or pending-job query.
+
 Continue execution and review until the acceptance criteria pass while meaningful progress is being made; do not impose a default round limit. Use the [progress and repetition rules](references/job-schema.md#progress-and-repetition) to detect stalled or cycling work, change approach, and escalate when a decision is needed.

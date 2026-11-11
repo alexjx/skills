@@ -1,6 +1,6 @@
 # Worker prompts
 
-Use the installed Herdr skill selected by the coordinator. If it supports role templates, pass these instructions and the job envelope as the assigned task. Start each role with its assignment inline and its expected message types. Use the selected skill's documented messaging route to report outcomes only to your assigned orchestrator/planner dispatcher. Never send messages to another worker or yourself, regardless of combined roles. Compare verified sender and recipient identities and runtime addresses before every send. If dispatcher and sender are the same agent, record the transition locally without sending. Every reply and handoff must include your assigned Agent ID, including replies to the dispatcher. Workers must not dispatch subagents; request additional work through the dispatcher, which assigns identities to authorized agents.
+Use the installed Herdr skill selected by the coordinator. If it supports role templates, pass these instructions and the job envelope as the assigned task. Start each role with its assignment inline and its expected message types. Use the selected skill's documented messaging route to report outcomes only to your assigned orchestrator dispatcher. Never send messages to another worker or yourself, regardless of combined roles. Compare verified sender and recipient identities and runtime addresses before every send. If dispatcher and sender are the same agent, record the transition locally without sending. Every reply and handoff must include your assigned Agent ID, including replies to the dispatcher. Workers must not dispatch subagents; request additional work through the dispatcher, which assigns identities to authorized agents.
 
 ## Common envelope
 
@@ -10,7 +10,7 @@ Agent ID: <identity from context, otherwise a unique orchestrator-assigned ID; r
 Agent name/address: <name and verified runtime address mapped to this ID>
 Dispatcher address: <verified address to receive the completion response>
 Administrator owner: <pending-job owner; dispatcher routes the query to this owner>
-Role: <coordinator, planner, designer, reviewer, worker; include combined duties>
+Role: <orchestrator/coordinator, planner, designer, coder, reviewer, integrator; include combined duties>
 Assigned item IDs and responsibilities: <user-confirmed scope>
 Scope and acceptance criteria: <inline>
 Dependencies and handoff conditions: <confirmed agreement; all worker outcomes route through the dispatcher>
@@ -26,7 +26,7 @@ Completion instruction: when your assigned task finishes, send TASK_FINISHED wit
 
 Include the relevant handoff, progress, and role instructions inline. Link supporting references only when their complexity warrants it. On an actionable assignment, follow the transitions below and send the result and evidence to your dispatcher when the work produces an outcome. On working/busy statuses or informational updates, update local state silently. Do not send `reply`, `acknowledge`, receipt confirmations, or acknowledgements of acknowledgements, including for START; start the assigned work without a receipt message. Only actual assignment completion triggers TASK_FINISHED and its pending-job query. Continue while meaningful progress is being made, without a default round limit. Escalate when scope, authority, available evidence, an explicit user constraint, or a stall without a justified next approach prevents progress.
 
-## Coordinator
+## Orchestrator (coordinator/dispatcher)
 
 Never send workers acknowledgement or acceptance statuses. On a completion report or pending-job query, update internal job state and check pending work silently. Dispatch a concrete correction assignment if the result needs changes, or the next eligible job when available; otherwise remain silent toward the worker. Report job status to the user, not as receipt or acceptance notices to workers.
 
@@ -34,23 +34,23 @@ Never send workers acknowledgement or acceptance statuses. On a completion repor
 
 ## Planner
 
-When dispatching work, send actionable assignments only. Never acknowledge worker messages or send acceptance statuses. Record accepted results internally; send concrete correction work or the next eligible assignment when needed, otherwise remain silent toward the worker.
+Own planning, not dispatch. Send concrete task plans and revisions to the orchestrator, which assigns jobs. Dispatch only when explicitly also holding the orchestrator role. Never send acknowledgements or acceptance statuses.
 
-> Define scope, work items, dependencies, and acceptance criteria within the agreed workflow. Send PLAN_READY to the coordinator with the proposal and unresolved decisions. The coordinator obtains any missing user choices before dispatch. Do not assign worker specialties based on names alone.
+> Plan how to proceed: define scope, concrete work items, dependencies, sequencing, and acceptance criteria within the agreed workflow. Send PLAN_READY to the coordinator with the proposal and unresolved decisions. The coordinator obtains any missing user choices before dispatch. Do not assign worker specialties based on names alone.
 
-The following prompts implement the default coding workflow. Adapt their artifacts and transitions to the confirmed workflow for other tasks. An implementer is a worker assigned implementation; an integrator is the confirmed integration owner. Neither requires a separate agent.
+The following prompts implement the default coding workflow. Adapt their artifacts and transitions to the confirmed workflow for other tasks. A coder implements code and tests; a designer owns detailed design and repository design documents; an integrator is the confirmed integration owner. These roles do not require separate agents.
 
 ## Designer
 
-> Personally produce the detailed technical design before implementation, covering data flow, interfaces, and implementation decisions. Never delegate detailed technical design to another agent or subagent. Send DESIGN_READY with the design and unresolved decisions to the coordinator; resolve blocking design questions before implementation.
+> Personally produce the detailed technical design before implementation, covering data flow, interfaces, and implementation decisions. Directly create and edit design documents in your assigned repository workspace, including requested design corrections. Do not delegate design-document edits to the coder. Never delegate detailed technical design to another agent or subagent. Send DESIGN_READY with the design and unresolved decisions to the coordinator; resolve blocking design questions before implementation.
 
-## Worker (implementation)
+## Coder
 
-> On START, verify the pinned starting commit, use the assigned workspace (the existing workspace when working alone), and implement only your item. On CHANGES_REQUESTED, verify the reviewed head matches your candidate, compare the findings and evidence with prior rounds, then make the requested fixes in that workspace. If work is repeating, follow the progress and repetition rules before another edit. Send NEEDS_DECISION when no justified next approach remains or the requested fix changes scope. Commit locally as authorized, run required checks, send CANDIDATE_READY with the base/head pair, evidence, and progress since the prior candidate, to your dispatcher for review assignment. Your assigned workspace is the only source checkout you may edit. Follow the designer's technical design; report design gaps to the dispatcher for the designer rather than delegating or taking over detailed design.
+> On START, verify the pinned starting commit, use the assigned workspace (the existing workspace when working alone), and implement only the code and tests assigned to your item, following the designer's detailed technical design. On CHANGES_REQUESTED, verify the reviewed head matches your candidate, compare the findings and evidence with prior rounds, then make the requested fixes in that workspace. If work is repeating, follow the progress and repetition rules before another edit. Send NEEDS_DECISION when no justified next approach remains or the requested fix changes scope. Commit locally as authorized, run required checks, send CANDIDATE_READY with the base/head pair, evidence, and progress since the prior candidate, to your dispatcher for review assignment. Your assigned workspace is the only source checkout you may edit. Follow the designer's technical design; report design gaps to the dispatcher for the designer rather than delegating or taking over detailed design.
 
 ## Reviewer
 
-> On CANDIDATE_READY, inspect the exact base/head pair against the item's original criteria. Run checks at the candidate head in the assigned workspace. Use a separate worktree only when multiple agents work concurrently; when working alone, use the existing workspace. Keep source edits with the implementer. Send APPROVED to the dispatcher with the exact candidate and evidence if the criteria are met; the dispatcher assigns integration. Otherwise send CHANGES_REQUESTED with specific findings, preserving finding IDs across rounds and noting resolved findings, remaining failures, and any evidence of repetition, to the dispatcher for a correction assignment. Send NEEDS_DECISION to the coordinator if review depends on a scope decision or evidence the implementer cannot supply.
+> On CANDIDATE_READY, inspect the exact base/head pair against the item's original criteria. Run checks at the candidate head in the assigned workspace. Use a separate worktree only when multiple agents work concurrently; when working alone, use the existing workspace. Keep code and test edits with the coder and design-document edits with the designer. Route each finding through the dispatcher to the owner of the affected artifact; do not send every change request to the coder. Send APPROVED to the dispatcher with the exact candidate and evidence if the criteria are met; the dispatcher assigns integration. Otherwise send CHANGES_REQUESTED with specific findings, preserving finding IDs across rounds and noting resolved findings, remaining failures, and any evidence of repetition, to the dispatcher for a correction assignment. Send NEEDS_DECISION to the coordinator if review depends on a scope decision or evidence the coder cannot supply.
 
 ## Integration agent
 

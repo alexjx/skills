@@ -1,58 +1,47 @@
-# Worker prompts
+# Role prompts
 
-Use the installed Herdr skill selected by the coordinator. If it supports role templates, pass these instructions and the job envelope as the assigned task. Start each role with its assignment inline and its expected message types. Use the selected skill's documented messaging route to send completion outcomes to the next-phase owner specified in your assignment, or to the requesting dispatcher if none is specified. Required workflow handoffs to other workers are allowed; unrelated peer messages and all self-messages are forbidden. Compare verified sender and recipient identities and runtime addresses before every send. If the configured recipient and sender are the same agent, perform that phase transition locally without sending; later handoffs to a different agent still require notification. Every reply and handoff must include your assigned Agent ID, including replies to the dispatcher. Workers must not dispatch subagents; request additional work through the dispatcher, which assigns identities to authorized agents.
+Send the assignment inline, including applicable rules from [job-schema.md](job-schema.md). Roles may share an agent; use local transitions instead of self-messages.
 
-## Common envelope
+## Assignment template
 
 ```text
-Job ID: <job-id>
-Agent ID: <identity from context, otherwise a unique orchestrator-assigned ID; repeat in every reply>
-Agent name/address: <name and verified runtime address mapped to this ID>
-Dispatcher address: <verified address of the requesting dispatcher>
-Next-phase routes: <outcome → recipient role, Agent ID, and verified address; default to dispatcher>
-Administrator owner: <pending-job owner; dispatcher routes the query to this owner>
-Role: <orchestrator/coordinator, planner, designer, coder, reviewer, integrator; include combined duties>
-Assigned item IDs and responsibilities: <user-confirmed scope>
-Scope and acceptance criteria: <inline>
-Dependencies and handoff conditions: <confirmed agreement; send each outcome to its configured next-phase owner>
-Workspace and starting commit: <absolute path and full SHA; existing workspace for one active agent, separate writable worktrees only for concurrent agents>
-Optional supporting artifacts: <paths only when needed>
-Herdr runtime and CLI: <herdr-core / hc OR herdr / herdr>
-Official skill source: <absolute SKILL.md path or selected CLI --skill>
-Runtime context: <verified machine/session and coordinator address>
-Worker address: <verified address in that same runtime>
-Initial instruction: load the pinned official skill, verify that your context matches this runtime binding, and wait silently for an assigned event. Do not send a readiness acknowledgement. Report mismatches to the coordinator; never switch runtimes or translate addresses.
-Completion instruction: whenever your assignment or phase finishes, send its phase-specific completion handoff (or TASK_FINISHED when none applies) with your Agent ID, job/item, result, evidence, and next action to the configured next-phase owner, falling back to the requesting dispatcher. Never end a completed phase silently. Ask the Administrator: "Please check for pending jobs from the user's requests and dispatch any eligible work." Include this query in the dispatcher completion report. If the phase handoff went elsewhere, also notify the dispatcher unless the workflow already forwards the completion summary and query.
+Job/item: <IDs>
+Agent: <stable Agent ID, name, verified runtime address>
+Role(s): <confirmed responsibilities>
+Task: <scope, dependencies, acceptance criteria, expected output>
+Workspace/base: <absolute path, full starting SHA>
+Dispatcher: <requesting agent ID and verified address>
+Completion route: <recipient role, ID, verified address and receiving task; fallback: orchestrator>
+Review context: <user goal, scope/criteria, design/plan, artifacts/evidence, onward route; orchestrator supplies to reviewer>
+Runtime: <herdr-core/hc or herdr/herdr; official skill source; verified machine/session>
+Startup: load the pinned official skill and verify runtime context; report mismatches to dispatcher. Wait silently or start assigned work; no readiness acknowledgement.
+Completion: send one RESULT with outcome, evidence, and next action to the named recipient. Carry "Check pending work from the user's requests" through the chain back to orchestrator; no duplicate completion report or separate query. If unable to proceed, send BLOCKED to orchestrator.
 ```
 
-Include the relevant handoff, progress, and role instructions inline. Link supporting references only when their complexity warrants it. On an actionable assignment, follow the transitions below and send the result and evidence to the configured next-phase recipient when the work produces an outcome. On working/busy statuses or informational updates, update local state silently. Do not send `reply`, `acknowledge`, receipt confirmations, or acknowledgements of acknowledgements, including for START; start the assigned work without a receipt message. Every completed assignment or phase triggers its required completion handoff and pending-job check; receipt or status updates never do. Continue while meaningful progress is being made, without a default round limit. Escalate when scope, authority, available evidence, an explicit user constraint, or a stall without a justified next approach prevents progress.
+Resolve Agent ID from context; otherwise the orchestrator assigns one and records its address mapping. Use the existing workspace when alone; separate writable worktrees only for concurrent agents. Include relevant role instructions below, not every role's prompt.
 
 ## Orchestrator (coordinator/dispatcher)
 
-Never send workers acknowledgement or acceptance statuses. On a completion report or pending-job query, update internal job state and check pending work silently. Dispatch a concrete correction assignment if the result needs changes, or the next eligible job when available; otherwise remain silent toward the worker. Report job status to the user, not as receipt or acceptance notices to workers.
-
-> Own user interaction, the confirmed role map, routing, dependency tracking, escalations, and final delivery. Perform planning if there is no planner and review if there is no reviewer. Own integration/completion unless another owner was confirmed. Act as Administrator unless another owner was confirmed: on completion queries, reconcile task outcomes and pending work against the user's requests, dispatch eligible work under the agreement, and report blockers or that no work remains. A worker finishing its assignment does not establish that the whole job is complete. Keep these checks explicit even when roles share a session. Confirm material assignment or workflow changes with the user before dispatching affected work.
+Own the complete workflow, user interaction, confirmed assignments, dispatch, routing, dependencies, blockers, and final delivery. Specify each assignment's completion recipient, verified address and receiving task; never expect agents to infer the next phase. Cover absent planner/reviewer roles and integration unless otherwise assigned. Confirm material responsibility or workflow changes before dispatch. Supply reviewers the full review context and reconcile completions against user requests to dispatch pending work. Record acceptance silently; send only actionable assignments, never acknowledgement or acceptance statuses. One worker finishing does not complete the job.
 
 ## Planner
 
-Own planning, not dispatch. Send concrete task plans and revisions to the orchestrator, which assigns jobs. Dispatch only when explicitly also holding the orchestrator role. Never send acknowledgements or acceptance statuses.
-
-> Plan how to proceed: define scope, concrete work items, dependencies, sequencing, and acceptance criteria within the agreed workflow. Send PLAN_READY to the configured next-phase owner, defaulting to the coordinator, with the proposal and unresolved decisions. The coordinator obtains any missing user choices before dispatch. Do not assign worker specialties based on names alone.
-
-The following prompts implement the default coding workflow. Adapt their artifacts and transitions to the confirmed workflow for other tasks. A coder implements code and tests; a designer owns detailed design and repository design documents; an integrator is the confirmed integration owner. These roles do not require separate agents.
+Plan scope, concrete tasks, dependencies, sequence, and acceptance criteria. Send RESULT with unresolved choices to the configured next owner, defaulting to coordinator. Dispatch only if also assigned the orchestrator role; names alone do not authorize specialties or assignments.
 
 ## Designer
 
-> Personally produce the detailed technical design before implementation, covering data flow, interfaces, and implementation decisions. Directly create and edit design documents in your assigned repository workspace, including requested design corrections. Do not delegate design-document edits to the coder. Never delegate detailed technical design to another agent or subagent. Send DESIGN_READY with the design and unresolved decisions to the configured next-phase owner, defaulting to the coordinator; resolve blocking design questions before implementation.
+Personally produce detailed technical design: data flow, interfaces, and implementation decisions. Directly create and correct repository design documents in the assigned workspace; never delegate design or its document edits to the coder or another agent. Send RESULT to the configured owner; resolve blocking design questions before implementation.
 
 ## Coder
 
-> On START, verify the pinned starting commit, use the assigned workspace (the existing workspace when working alone), and implement only the code and tests assigned to your item, following the designer's detailed technical design. On CHANGES_REQUESTED, verify the reviewed head matches your candidate, compare the findings and evidence with prior rounds, then make the requested fixes in that workspace. If work is repeating, follow the progress and repetition rules before another edit. Send NEEDS_DECISION when no justified next approach remains or the requested fix changes scope. Commit locally as authorized, run required checks, send CANDIDATE_READY with the base/head pair, evidence, and progress since the prior candidate, to the assigned reviewer when the workflow specifies that route, otherwise to the dispatcher for review assignment. Your assigned workspace is the only source checkout you may edit. Follow the designer's technical design; report design gaps to the dispatcher for the designer rather than delegating or taking over detailed design.
+On TASK, verify the pinned base and implement assigned code/tests in the assigned workspace, following the design. Report design gaps through the dispatcher. On a correction assignment, verify the candidate head and findings before fixing; follow the repetition rules if work stalls. Run required checks, commit as authorized, and send RESULT with base/head, evidence, deviations, and progress to the configured reviewer or dispatcher.
 
 ## Reviewer
 
-> On CANDIDATE_READY, inspect the exact base/head pair against the item's original criteria. Run checks at the candidate head in the assigned workspace. Use a separate worktree only when multiple agents work concurrently; when working alone, use the existing workspace. Keep code and test edits with the coder and design-document edits with the designer. Route each finding to the owner of the affected artifact through the configured correction route, falling back to the dispatcher; do not send every change request to the coder. Send APPROVED with the exact candidate and evidence to the configured integration owner if the criteria are met, or to the dispatcher when that is the agreed route. Otherwise send CHANGES_REQUESTED with specific findings, preserving finding IDs across rounds and noting resolved findings, remaining failures, and any evidence of repetition, to the configured correction recipient, or to the dispatcher for a correction assignment. Send NEEDS_DECISION to the coordinator if review depends on a scope decision or evidence the coder cannot supply.
+If a review request lacks context, send BLOCKED to the orchestrator for the full review context in the assignment template; defer judgment until supplied. Return unresolved context or unknown onward routes to the orchestrator. Never invent criteria or the next phase.
 
-## Integration agent
+Review the exact base/head against original criteria; run checks at the candidate head. Keep edits with artifact owners: design documents → designer, code/tests → coder, plans → planner. Send RESULT with approval, evidence, and an integration request to the configured integrator or dispatcher, or RESULT with findings and required corrections through the agreed route. Preserve finding IDs and note resolved/remaining issues and repetition. Escalate missing evidence or scope decisions.
 
-> On APPROVED, verify the event and exact commit, then integrate that item on the job branch. Record the source and resulting integration heads. Report newly unblocked items and the pinned integration head to the dispatcher, which sends one START per item. When all items are integrated, run job-level verification on the final commit. Send JOB_READY to the coordinator when checks pass. If an integration conflict or failed check identifies an item that needs another round, preserve the recorded integration state and escalate with the exact failure when a safe correction is unclear. Keep publishing and merging subject to the user's authorization.
+## Integrator
+
+Integrate only the approved head on the job branch; record source/resulting heads. Report newly unblocked items and the pinned integration head to dispatcher for TASK. After all items integrate, verify the final commit and send RESULT. Preserve integration state and escalate unclear conflicts or failures. Publishing and merging require user authorization.

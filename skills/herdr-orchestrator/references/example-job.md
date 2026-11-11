@@ -1,34 +1,24 @@
-# Example job j42 · stabilize CSV exports
+# Example: CSV export fix
 
-This is the default coding workflow, after the user confirms the following responsibilities and handoffs. Separate reviewers and an integrator are illustrative; the coordinator covers planning, review, and integration when those owners are absent. Agent names suggest scopes but do not select them.
+After confirmed planning and personally authored designer documents, coordinator dispatches parser coding. A round-trip test depends on parser integration. Addresses and outcome routes are pinned in assignments; below, labels stand for full SHAs.
 
-The confirmed designer has personally completed the detailed technical design before dispatch; this responsibility is never delegated. The planner breaks the request into concrete jobs; the coordinator dispatches them. Design-document edits and corrections are assigned to the designer, while code and test changes are assigned to coders. Each dispatched task includes an Agent ID from context or assigned by the orchestrator, mapped to the agent's runtime address. All replies repeat that ID.
+Coordinator specifies reviewer and completion action in each coding assignment; orchestrator supplies review context. A reviewer missing context requests it before judging. Unknown routes or unresolved context return to coordinator.
 
-The parser and docs are independent. The round-trip regression test depends on the parser being integrated. Each agent receives its dispatcher address and verified next-phase routes in its startup message. Required handoffs follow those routes; unrelated peer messages and self-messages are forbidden. The coordinator is the dispatcher in this example. One integrator owns the job branch. The commit labels below stand in for full Git object IDs.
-
-| Event | Sender → receiver | Result |
+| Event | Sender → receiver | Action |
 | --- | --- | --- |
-| `parser.r1.start`, `docs.r1.start` | Coordinator → each coder | Both start from `B0` in separate worktrees. The coordinator continues interacting with the user. |
-| `parser.r1.candidate` | Parser coder → parser reviewer | Review `B0..P1`. |
-| `docs.r1.candidate` | Docs coder → docs reviewer | Review `B0..D1` while parser review is underway. |
-| `parser.r1.review` | Parser reviewer → parser coder | Request a fix because a quoted field followed by a trailing delimiter loses the final empty value. |
-| `docs.r1.review` | Docs reviewer → integrator | Approve `D1`. The integrator applies it at `I1`. |
-| `parser.r2.candidate` | Parser coder → parser reviewer | Review `B0..P2`, including the new regression test. |
-| `parser.r2.review` | Parser reviewer → integrator | Approve `P2`. The integrator applies it at `I2`. |
-| `roundtrip.r1.start` | Integrator → coordinator → round-trip coder | The parser dependency is satisfied. Start at `I2`. |
-| `roundtrip.r1.candidate` | Round-trip coder → round-trip reviewer | Review `I2..R1`. |
-| `roundtrip.r1.review` | Round-trip reviewer → integrator | Approve `R1`. Integrate at `I3` and run the final checks. |
-| `job.ready` | Integrator → coordinator | The final commit is `I3` and the required checks passed. |
+| TASK | Coordinator → coder | Implement parser from B0. |
+| RESULT | Coder → reviewer | Review B0..P1 with test evidence. |
+| RESULT | Reviewer → coder | Fix trailing-empty-field regression. |
+| RESULT | Coder → reviewer | Review B0..P2; report resolved finding and checks. |
+| RESULT | Reviewer → integrator | Integrate exact P2. |
+| RESULT | Integrator → coordinator | Report integration head I1; unblock round-trip job. |
+| TASK | Coordinator → coder | Implement round-trip test from I1. |
+| RESULT | Coder → reviewer | Review I1..R1. |
+| RESULT | Reviewer → integrator | Integrate R1; run final checks. |
+| RESULT | Integrator → coordinator | Report final I2, accepted heads, and checks. |
 
-After the second parser review, the reviewer sends the exact approval and evidence to the configured integrator:
+Each completed phase notifies its next owner. Do not copy phase results to dispatcher. Carry the pending-work query through the chain; coordinator checks it when integration results return. No receipt acknowledgements or status-only acceptance messages follow.
 
-```text
-Job j42 | parser.r2.review | APPROVED | From: reviewer-1
-Candidate parser.r2.candidate: B0..P2 (use full SHAs in actual messages).
-Trailing-empty-field regression fixed; parser regression checks passed.
-Integrate P2, then report the dependency as satisfied so the dispatcher can start roundtrip.
-```
+In two-agent mode, dispatcher may also review: coder sends RESULT back to dispatcher/reviewer, which performs its next local duty or sends the required handoff. Never self-message. A lone agent uses the existing workspace; separate writable worktrees apply only to concurrent agents.
 
-If a single agent performs these roles sequentially, it uses the existing workspace and records local role transitions; separate worktrees are used only for concurrent agents.
-
-Every completed phase sends its accomplishment to the next owner in the table. Agents also report completion and the pending-job query to the dispatcher unless the workflow already forwards them. No recipient sends a receipt acknowledgement or status-only acceptance. In a two-agent job where the dispatcher also reviews, the worker sends CANDIDATE_READY back to that dispatcher/reviewer; after review, that agent performs its next local responsibility or sends the next required handoff. No handoff file is needed. If the message arrives twice, the dispatcher checks handled messages and Git state before dispatching again. A delayed request about P1 cannot restart the first review round. Large test output may be linked separately, while the outcome and next action stay in the message.
+Duplicate delivery never repeats work: reconcile event IDs and Git state. Design-document corrections belong to designer, code/tests to coder. See [message rules](job-schema.md) for recovery and repetition.

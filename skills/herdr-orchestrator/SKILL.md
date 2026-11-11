@@ -15,6 +15,7 @@ On the first run for a job, inspect available agents and existing user instructi
 
 - **Coordinator:** user interaction, routing, dependency tracking, blockers, and final delivery.
 - **Planner:** scope, decomposition, dependencies, and acceptance criteria. If absent, the coordinator performs these duties.
+- **Designer:** personally produce the detailed technical design, including data flow, interfaces, and implementation decisions. Never delegate this responsibility to other agents. If there is no separate designer, confirm an existing agent as the design owner before implementation.
 - **Reviewer:** evaluate outputs against the agreed criteria and request corrections or approve. If absent, the coordinator performs these duties; review is not skipped.
 - **Workers:** one or more agents executing explicitly assigned scopes. Ask the user to choose or confirm each worker's responsibility, using names to suggest likely scopes when helpful. Do not silently assign specialties, divide work, or create extra workers.
 
@@ -26,8 +27,8 @@ Record the confirmed agreement inline for simple jobs or in `.agents/plans/<job-
 
 ## Run the agreed job
 
-1. Read [handoff guidance](references/job-schema.md) and [role prompts](references/worker-prompts.md). Bind logical roles to the confirmed agents, including coordinator fallbacks. For concurrent code changes, use separate writable worktrees.
-2. Start and confirm receivers are ready before sending initial work. Send each agent its confirmed scope, criteria, workspace, expected messages, and downstream addresses inline. Tell idle agents to return to their prompt after setup, then kick off dependency-free items.
+1. Read [handoff guidance](references/job-schema.md) and [role prompts](references/worker-prompts.md). Bind logical roles to the confirmed agents, including coordinator fallbacks. Use separate writable worktrees only when multiple agents work concurrently. With a single active agent, use the existing workspace, including when that agent performs multiple roles in sequence.
+2. Start and confirm receivers are ready before sending initial work. Send each agent its confirmed scope, criteria, workspace, expected messages, and downstream addresses inline. Include a stable sender identity in each dispatched task and require it in every reply, including subagent replies. Use the identity available from context; otherwise the orchestrator assigns a unique ID and records its mapping to the agent and runtime address. Tell idle agents to return to their prompt after setup, then kick off dependency-free items once the designer has completed any required technical design.
 3. Send results and evidence directly to the next confirmed owner when the agreed handoff conditions are met. Default to concise plain text, without JSON envelopes or handoff files. Use files for complex content, large artifacts, or necessary recovery checkpoints, with the actionable summary still inline. If consecutive roles belong to the same agent, perform the next responsibility locally and record its outcome instead of messaging itself.
 4. The coordinator tracks dependencies and communicates with the user. The confirmed integration/completion owner combines accepted outputs and performs final verification, then reports to the coordinator for user delivery. Keep publishing and merging subject to the user's authorization.
 

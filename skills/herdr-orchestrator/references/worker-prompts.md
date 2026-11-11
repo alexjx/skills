@@ -1,16 +1,18 @@
 # Worker prompts
 
-Use the installed Herdr skill selected by the coordinator. If it supports role templates, pass these instructions and the job envelope as the assigned task. Start each role with its assignment inline and its expected message types. Use the selected skill's documented messaging route to deliver events to downstream agents.
+Use the installed Herdr skill selected by the coordinator. If it supports role templates, pass these instructions and the job envelope as the assigned task. Start each role with its assignment inline and its expected message types. Use the selected skill's documented messaging route to deliver events to downstream agents. Every reply and handoff must include your assigned Agent ID, including replies to the dispatcher. If dispatching an authorized subagent, give it its own identity and require that identity in its replies.
 
 ## Common envelope
 
 ```text
 Job ID: <job-id>
-Role: <coordinator, planner, reviewer, worker; include combined duties>
+Agent ID: <identity from context, otherwise a unique orchestrator-assigned ID; repeat in every reply>
+Agent name/address: <name and verified runtime address mapped to this ID>
+Role: <coordinator, planner, designer, reviewer, worker; include combined duties>
 Assigned item IDs and responsibilities: <user-confirmed scope>
 Scope and acceptance criteria: <inline>
 Dependencies, downstream addresses, and handoff conditions: <confirmed agreement>
-Worktree and starting commit: <absolute path and full SHA>
+Workspace and starting commit: <absolute path and full SHA; existing workspace for one active agent, separate writable worktrees only for concurrent agents>
 Optional supporting artifacts: <paths only when needed>
 Herdr runtime and CLI: <herdr-core / hc OR herdr / herdr>
 Official skill source: <absolute SKILL.md path or selected CLI --skill>
@@ -31,13 +33,17 @@ Include the relevant handoff, progress, and role instructions inline. Link suppo
 
 The following prompts implement the default coding workflow. Adapt their artifacts and transitions to the confirmed workflow for other tasks. An implementer is a worker assigned implementation; an integrator is the confirmed integration owner. Neither requires a separate agent.
 
+## Designer
+
+> Personally produce the detailed technical design before implementation, covering data flow, interfaces, and implementation decisions. Never delegate detailed technical design to another agent or subagent. Send DESIGN_READY with the design and unresolved decisions to the coordinator; resolve blocking design questions before implementation.
+
 ## Worker (implementation)
 
-> On START, verify the pinned starting commit, set up the assigned worktree, and implement only your item. On CHANGES_REQUESTED, verify the reviewed head matches your candidate, compare the findings and evidence with prior rounds, then make the requested fixes in that worktree. If work is repeating, follow the progress and repetition rules before another edit. Send NEEDS_DECISION when no justified next approach remains or the requested fix changes scope. Commit locally as authorized, run required checks, send CANDIDATE_READY with the base/head pair, evidence, and progress since the prior candidate, directly to your assigned reviewer. Your worktree is the only source checkout you may edit.
+> On START, verify the pinned starting commit, use the assigned workspace (the existing workspace when working alone), and implement only your item. On CHANGES_REQUESTED, verify the reviewed head matches your candidate, compare the findings and evidence with prior rounds, then make the requested fixes in that workspace. If work is repeating, follow the progress and repetition rules before another edit. Send NEEDS_DECISION when no justified next approach remains or the requested fix changes scope. Commit locally as authorized, run required checks, send CANDIDATE_READY with the base/head pair, evidence, and progress since the prior candidate, directly to your assigned reviewer. Your assigned workspace is the only source checkout you may edit. Follow the designer's technical design; send design gaps to the designer rather than delegating or taking over detailed design.
 
 ## Reviewer
 
-> On CANDIDATE_READY, inspect the exact base/head pair against the item's original criteria. Use a separate checkout at the candidate head if you need to run checks. Keep source edits with the implementer. Send APPROVED directly to the integration agent if the criteria are met. Otherwise send CHANGES_REQUESTED with specific findings, preserving finding IDs across rounds and noting resolved findings, remaining failures, and any evidence of repetition, directly to the implementer. Send NEEDS_DECISION to the coordinator if review depends on a scope decision or evidence the implementer cannot supply.
+> On CANDIDATE_READY, inspect the exact base/head pair against the item's original criteria. Run checks at the candidate head in the assigned workspace. Use a separate worktree only when multiple agents work concurrently; when working alone, use the existing workspace. Keep source edits with the implementer. Send APPROVED directly to the integration agent if the criteria are met. Otherwise send CHANGES_REQUESTED with specific findings, preserving finding IDs across rounds and noting resolved findings, remaining failures, and any evidence of repetition, directly to the implementer. Send NEEDS_DECISION to the coordinator if review depends on a scope decision or evidence the implementer cannot supply.
 
 ## Integration agent
 

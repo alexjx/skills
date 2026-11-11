@@ -27,6 +27,15 @@ Integrate this exact head; parser acceptance criteria are met.
 | `APPROVED` | Reviewer → integrator | Exact candidate and verification evidence. |
 | `NEEDS_DECISION` | Any agent → coordinator | Decision or blocker and affected work. |
 | `JOB_READY` | Integration owner → coordinator | Exact integration head, accepted item heads, and final checks. |
+| `TASK_FINISHED` | Any dispatched agent/system → dispatcher | Sender Agent ID, assigned job/item, result, evidence, and query asking the Administrator to check pending jobs from the user's requests. Send the query directly to the Administrator too if it is a different receiver. |
+
+Every dispatched task requires a completion response, including tasks assigned to subagents. A downstream handoff does not replace this response unless it also reaches the dispatcher and includes the completion query. Report blocked or failed work as such; do not label it successfully completed. The Administrator (coordinator by default) reconciles the result against the user's requests and current dependency state, then dispatches eligible pending work under the confirmed agreement or reports blockers or that no work remains. Record this check locally when one agent owns both roles. Completion queries do not bypass review, integration, or final acceptance checks.
+
+```text
+Job j42 | parser.r2.finished | TASK_FINISHED | From: parser-1
+Assigned task complete: candidate P2 sent to reviewer-1; regression checks passed.
+Administrator: please check for pending jobs from the user's requests and dispatch any eligible work.
+```
 
 Include only applicable fields. For a fix, preserve the original review base and start from the prior candidate head. The reviewer reviews the entire pinned item diff again. The integrator integrates only the approved head.
 

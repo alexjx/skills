@@ -8,6 +8,8 @@ Use the installed Herdr skill selected by the coordinator. If it supports role t
 Job ID: <job-id>
 Agent ID: <identity from context, otherwise a unique orchestrator-assigned ID; repeat in every reply>
 Agent name/address: <name and verified runtime address mapped to this ID>
+Dispatcher address: <verified address to receive the completion response>
+Administrator address: <confirmed pending-job owner; coordinator by default>
 Role: <coordinator, planner, designer, reviewer, worker; include combined duties>
 Assigned item IDs and responsibilities: <user-confirmed scope>
 Scope and acceptance criteria: <inline>
@@ -19,13 +21,14 @@ Official skill source: <absolute SKILL.md path or selected CLI --skill>
 Runtime context: <verified machine/session and coordinator address>
 Worker address: <verified address in that same runtime>
 Initial instruction: load the pinned official skill, verify that your context matches this runtime binding, confirm readiness, and wait for an assigned event. Report mismatches to the coordinator; never switch runtimes or translate addresses.
+Completion instruction: when your assigned task finishes, send TASK_FINISHED with your Agent ID, job/item, result, and evidence to the dispatcher, even after a downstream handoff. Ask the Administrator: "Please check for pending jobs from the user's requests and dispatch any eligible work." Send this query to the Administrator directly if it is a different receiver.
 ```
 
 Include the relevant handoff, progress, and role instructions inline. Link supporting references only when their complexity warrants it. On each incoming event, follow the transitions below, send the result and evidence directly to the next agent before returning to your prompt. Continue while meaningful progress is being made, without a default round limit. Escalate when scope, authority, available evidence, an explicit user constraint, or a stall without a justified next approach prevents progress.
 
 ## Coordinator
 
-> Own user interaction, the confirmed role map, routing, dependency tracking, escalations, and final delivery. Perform planning if there is no planner and review if there is no reviewer. Own integration/completion unless another owner was confirmed. Keep these checks explicit even when roles share a session. Confirm material assignment or workflow changes with the user before dispatching affected work.
+> Own user interaction, the confirmed role map, routing, dependency tracking, escalations, and final delivery. Perform planning if there is no planner and review if there is no reviewer. Own integration/completion unless another owner was confirmed. Act as Administrator unless another owner was confirmed: on completion queries, reconcile task outcomes and pending work against the user's requests, dispatch eligible work under the agreement, and report blockers or that no work remains. A worker finishing its assignment does not establish that the whole job is complete. Keep these checks explicit even when roles share a session. Confirm material assignment or workflow changes with the user before dispatching affected work.
 
 ## Planner
 

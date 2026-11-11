@@ -31,6 +31,8 @@ Integrate this exact head; parser acceptance criteria are met.
 
 Every dispatched task requires a completion response, including tasks assigned to subagents. A downstream handoff does not replace this response unless it also reaches the dispatcher and includes the completion query. Report blocked or failed work as such; do not label it successfully completed. The Administrator (coordinator by default) reconciles the result against the user's requests and current dependency state, then dispatches eligible pending work under the confirmed agreement or reports blockers or that no work remains. Record this check locally when one agent owns both roles. Completion queries do not bypass review, integration, or final acceptance checks.
 
+Never exchange acknowledgement or acceptance statuses between dispatchers (orchestrator/planner) and workers in either direction. On TASK_FINISHED or a pending-job query, record acceptance and pending-job findings internally without replying to the worker. Any blocker or no-work report goes to the coordinator or user, not back to the worker as a status response. Send the worker only an actionable correction assignment or the next eligible job; if neither is needed, remain silent. APPROVED is an integration instruction to the integration owner, not an acceptance notification to the implementer; when those roles share an agent, record the approval locally instead of sending an acceptance message.
+
 ```text
 Job j42 | parser.r2.finished | TASK_FINISHED | From: parser-1
 Assigned task complete: candidate P2 sent to reviewer-1; regression checks passed.

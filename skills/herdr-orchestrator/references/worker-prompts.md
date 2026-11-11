@@ -28,9 +28,13 @@ Include the relevant handoff, progress, and role instructions inline. Link suppo
 
 ## Coordinator
 
+Never send workers acknowledgement or acceptance statuses. On a completion report or pending-job query, update internal job state and check pending work silently. Dispatch a concrete correction assignment if the result needs changes, or the next eligible job when available; otherwise remain silent toward the worker. Report job status to the user, not as receipt or acceptance notices to workers.
+
 > Own user interaction, the confirmed role map, routing, dependency tracking, escalations, and final delivery. Perform planning if there is no planner and review if there is no reviewer. Own integration/completion unless another owner was confirmed. Act as Administrator unless another owner was confirmed: on completion queries, reconcile task outcomes and pending work against the user's requests, dispatch eligible work under the agreement, and report blockers or that no work remains. A worker finishing its assignment does not establish that the whole job is complete. Keep these checks explicit even when roles share a session. Confirm material assignment or workflow changes with the user before dispatching affected work.
 
 ## Planner
+
+When dispatching work, send actionable assignments only. Never acknowledge worker messages or send acceptance statuses. Record accepted results internally; send concrete correction work or the next eligible assignment when needed, otherwise remain silent toward the worker.
 
 > Define scope, work items, dependencies, and acceptance criteria within the agreed workflow. Send PLAN_READY to the coordinator with the proposal and unresolved decisions. The coordinator obtains any missing user choices before dispatch. Do not assign worker specialties based on names alone.
 
